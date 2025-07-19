@@ -38,17 +38,12 @@ const upload = multer({
 // Middleware
 app.use(express.json());
 
-// ❌ Commented out to prevent ENOENT for missing 'public' directory
-// app.use(express.static('public'));
+// ✅ Serve static files (optional, for images/css/js if needed)
+app.use(express.static('public'));
 
-// ❌ Commented out to prevent ENOENT for missing index.html
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'index.html'));
-// });
-
-// Temporary replacement home route to check if server is alive
+// ✅ Serve HTML UI
 app.get('/', (req, res) => {
-    res.send(`<h2>✅ Server is running. Upload a CSV to /api/upload</h2>`);
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Download test CSV if needed
@@ -63,7 +58,6 @@ app.post('/api/upload', upload.single('csv'), (req, res) => {
     const jobId = uuidv4();
     const filePath = req.file.path;
 
-    // Create job entry
     jobs.set(jobId, {
         id: jobId,
         status: 'processing',
@@ -73,7 +67,6 @@ app.post('/api/upload', upload.single('csv'), (req, res) => {
         error: null
     });
 
-    // Start ML task
     processCSV(jobId, filePath);
 
     res.json({ success: true, jobId });
@@ -140,7 +133,6 @@ function processCSV(jobId, filePath) {
 
         jobs.set(jobId, job);
 
-        // Cleanup after 5 minutes
         setTimeout(() => jobs.delete(jobId), 5 * 60 * 1000);
     });
 

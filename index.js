@@ -37,11 +37,18 @@ const upload = multer({
 
 // Middleware
 app.use(express.json());
-app.use(express.static('public'));
 
-// Serve home page
+// ❌ Commented out to prevent ENOENT for missing 'public' directory
+// app.use(express.static('public'));
+
+// ❌ Commented out to prevent ENOENT for missing index.html
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'index.html'));
+// });
+
+// Temporary replacement home route to check if server is alive
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.send(`<h2>✅ Server is running. Upload a CSV to /api/upload</h2>`);
 });
 
 // Download test CSV if needed

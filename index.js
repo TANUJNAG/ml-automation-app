@@ -109,7 +109,6 @@ app.get('/', (req, res) => {
                     <div class="drop-zone" id="dropZone">
                         <h3>📁 Drop your CSV file here or click to select</h3>
                         <p>Maximum file size: 10MB</p>
-                        <p><a href="/test_data.csv" download>📥 Download sample dataset</a> for quick testing</p>
                         <input type="file" id="fileInput" accept=".csv" style="display: none;">
                     </div>
                 </div>

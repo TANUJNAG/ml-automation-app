@@ -55,7 +55,24 @@ app.get('/', (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSV Linear Regression Analysis</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #007bff; color: white; }
+        .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .text-center { text-align: center; }
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+        .alert { padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .progress { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #007bff; transition: width 0.3s; }
+        .metric-card { text-align: center; padding: 20px; margin: 10px; border-radius: 8px; color: white; }
+        .metric-r2 { background: #007bff; }
+        .metric-mae { background: #28a745; }
+        .metric-mse { background: #17a2b8; }
+    </style>
     <style>
         .drop-zone {
             border: 2px dashed #ccc;
@@ -79,88 +96,59 @@ app.get('/', (req, res) => {
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h1 class="text-center mb-4">CSV Linear Regression Analysis</h1>
+    <div class="container">
+                <h1 class="text-center">CSV Linear Regression Analysis</h1>
                 
                 <!-- Upload Area -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="drop-zone" id="dropZone">
-                            <i data-feather="upload-cloud" class="mb-3" style="width: 48px; height: 48px;"></i>
-                            <h5>Drop your CSV file here or click to select</h5>
-                            <p class="text-muted">Maximum file size: 10MB</p>
-                            <input type="file" id="fileInput" accept=".csv" style="display: none;">
-                        </div>
+                <div class="card">
+                    <div class="drop-zone" id="dropZone">
+                        <h3>📁 Drop your CSV file here or click to select</h3>
+                        <p>Maximum file size: 10MB</p>
+                        <input type="file" id="fileInput" accept=".csv" style="display: none;">
                     </div>
                 </div>
 
                 <!-- Status Area -->
-                <div class="card mb-4" id="statusCard" style="display: none;">
-                    <div class="card-body">
-                        <h6 class="card-title">Processing Status</h6>
-                        <div class="d-flex align-items-center">
-                            <div class="spinner-border text-primary me-2" role="status" id="spinner"></div>
-                            <span id="statusText">Uploading file...</span>
-                        </div>
-                        <div class="progress mt-2" style="height: 6px;">
-                            <div class="progress-bar" role="progressbar" id="progressBar" style="width: 0%"></div>
-                        </div>
+                <div class="card" id="statusCard" style="display: none;">
+                    <h3>Processing Status</h3>
+                    <p id="statusText">Uploading file...</p>
+                    <div class="progress">
+                        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- Results Area -->
                 <div class="results-container" id="resultsContainer">
                     <div class="card">
-                        <div class="card-body">
-                            <h6 class="card-title">Linear Regression Results</h6>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card bg-primary text-white">
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title">R² Score</h5>
-                                            <h3 id="r2Score">-</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card bg-success text-white">
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title">MAE</h5>
-                                            <h3 id="maeScore">-</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card bg-info text-white">
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title">MSE</h5>
-                                            <h3 id="mseScore">-</h3>
-                                        </div>
-                                    </div>
+                        <h3>Linear Regression Results</h3>
+                        <div class="row">
+                            <div class="col">
+                                <div class="metric-card metric-r2">
+                                    <h4>R² Score</h4>
+                                    <h2 id="r2Score">-</h2>
                                 </div>
                             </div>
-                            <div class="mt-3">
-                                <small class="text-muted">
-                                    <strong>Dataset Info:</strong> 
-                                    <span id="datasetInfo">-</span>
-                                </small>
+                            <div class="col">
+                                <div class="metric-card metric-mae">
+                                    <h4>MAE</h4>
+                                    <h2 id="maeScore">-</h2>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="metric-card metric-mse">
+                                    <h4>MSE</h4>
+                                    <h2 id="mseScore">-</h2>
+                                </div>
                             </div>
                         </div>
+                        <p><strong>Dataset Info:</strong> <span id="datasetInfo">-</span></p>
                     </div>
                 </div>
 
                 <!-- Error Area -->
                 <div class="alert alert-danger" id="errorAlert" style="display: none;"></div>
-            </div>
-        </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
     <script>
-        // Initialize Feather icons
-        feather.replace();
 
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
